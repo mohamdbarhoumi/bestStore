@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <h1 class="text-center my-4">Products</h1>
+    <a class="btn btn-primary" href="/createProduct.html">Create a product</a>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Brand</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Image</th>
+            <th>CreatedAt</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="product-table-body">
+        <tr th:each="product : ${products}">
+            <td th:text="${product.id}"></td>
+            <td th:text="${product.name}"></td>
+            <td th:text="${product.brand}"></td>
+            <td th:text="${product.category}"></td>
+            <td th:text="${product.price}"></td>
+            <td th:text="${product.description}"></td>
+            <td th:text="${product.date}"></td>
+            <td th:text="${product.imageFileName}"></td>
+        </tr>
+
+        </tbody>
+
+    </table>
+</div>
+<script>
+    // Function to fetch and display products
+    async function fetchProducts() {
+        try {
+            const response = await fetch('/api/products');  // Ensure this endpoint is correct
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+            const products = await response.json();
+
+            const tableBody = document.getElementById('product-table-body');
+            tableBody.innerHTML = '';  // Clear any existing rows
+
+            // Loop through the products and create a table row for each
+            products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.brand}</td>
+                    <td>${product.category}</td>
+                    <td>${product.price}</td>
+                    <td><img src="images/${product.imageFileName}" alt="${product.name}" width="50"></td>
+                    <td>${product.date}</td>
+                    <td>
+                        <a href="/products/${product.id}" class="btn btn-info btn-sm">View</a>
+                        <a href="/products/edit/${product.id}" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    }
+
+    // Fetch products when the page loads
+    window.onload = fetchProducts;
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</body>
+</html>
