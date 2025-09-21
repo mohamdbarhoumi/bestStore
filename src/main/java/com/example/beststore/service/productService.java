@@ -48,7 +48,7 @@ public class productService {
 
     private String saveImageFile(MultipartFile image) throws IOException {
         // ✅ No casting needed
-        Path uploadPath = Paths.get("src/main/resources/static/images");
+        Path uploadPath = Paths.get("uploads/images");
 
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
