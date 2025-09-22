@@ -3,6 +3,7 @@ package com.example.beststore.service;
 import com.example.beststore.models.product;
 import com.example.beststore.models.productDto;
 import com.example.beststore.repository.productRepo;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,9 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;  // ✅ CORRECT import
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class productService {
@@ -73,4 +72,26 @@ public class productService {
 
         return newFileName;
     }
+
+
+    public Optional<product> getProductById(int id) {
+        return repo.findById(id);
+    }
+
+    public product updateProduct(int id, @Valid productDto product) throws IOException{
+        Optional<product> optionalProduct = repo.findById(id);
+        if(optionalProduct.isEmpty()){
+            throw new RuntimeException("product not found");
+        }
+
+        product existingProduct = optionalProduct.get();
+        existingProduct.setName(product.getName());
+        existingProduct.setBrand(product.getBrand());
+        existingProduct.setPrice(product.getPrice());
+        existingProduct.setCategory(product.getCategory());
+        existingProduct.setDescription(product.getDescription());
+        return repo.save(existingProduct);
+    }
+
+
 }

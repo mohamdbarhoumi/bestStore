@@ -24,6 +24,29 @@ public class productDto {
     private String description;
     private MultipartFile image;
 
+    public String getName() {
+        return name;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public MultipartFile getImage() {
+        return image;
+    }
 
 
 }

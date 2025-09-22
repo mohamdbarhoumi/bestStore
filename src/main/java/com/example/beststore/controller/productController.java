@@ -8,7 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -41,4 +43,28 @@ public class productController {
                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
            }
     }
+
+    @GetMapping("/products/{id}")
+    public ResponseEntity<product> getProduct(@PathVariable int id){
+        Optional<product> product = service.getProductById(id);
+        if(product.isPresent()){
+            return ResponseEntity.ok(product.get());
+        }
+            return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/products/{id}")
+    public ResponseEntity<product> updateProduct(@PathVariable int id, @Valid @RequestBody productDto dto){
+        try{
+            product updateProduct = service.updateProduct(id,dto);
+            return ResponseEntity.ok(updateProduct);
+        }catch (RuntimeException e){
+            return ResponseEntity.notFound().build();
+        }catch (IOException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+
+
 }
