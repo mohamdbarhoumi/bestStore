@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Product</title>
+</head>
+<body>
+<h1>Edit Product</h1>
+
+<form id="editProductForm" enctype="multipart/form-data">
+    <input type="hidden" id="productId" value="1"> <!-- Set this dynamically if needed -->
+
+    <label for="name">Product Name:</label><br>
+    <input type="text" id="name" name="name" required><br><br>
+
+    <label for="brand">Brand:</label><br>
+    <input type="text" id="brand" name="brand" required><br><br>
+
+    <label for="category">Category:</label><br>
+    <input type="text" id="category" name="category" required><br><br>
+
+    <label for="price">Price:</label><br>
+    <input type="number" id="price" name="price" step="0.01" min="0" required><br><br>
+
+    <label for="description">Description:</label><br>
+    <textarea id="description" name="description" minlength="10" maxlength="100" required></textarea><br><br>
+
+    <label for="image">Product Image:</label><br>
+    <input type="file" id="image" name="image" accept="image/*"><br><br>
+
+    <button type="submit">Update Product</button>
+</form>
+
+<div id="message"></div>
+
+<script>
+    const form = document.getElementById('editProductForm');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const id = document.getElementById('productId').value;
+        const formData = new FormData();
+
+        formData.append("name", document.getElementById('name').value);
+        formData.append("brand", document.getElementById('brand').value);
+        formData.append("category", document.getElementById('category').value);
+        formData.append("price", document.getElementById('price').value);
+        formData.append("description", document.getElementById('description').value);
+
+        const imageInput = document.getElementById('image');
+        if (imageInput.files.length > 0) {
+            formData.append("image", imageInput.files[0]);
+        }
+
+        try {
+            const response = await fetch(`/api/products/${id}`, {
+                method: 'PUT',
+                body: formData
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                messageDiv.innerText = `Product updated successfully: ${result.name}`;
+            } else if (response.status === 400) {
+                const errorText = await response.text();
+                messageDiv.innerText = `Validation error: ${errorText}`;
+            } else if (response.status === 404) {
+                messageDiv.innerText = 'Product not found.';
+            } else {
+                messageDiv.innerText = 'An unexpected error occurred.';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            messageDiv.innerText = 'A network error occurred.';
+        }
+    });
+
+    // Optional: fetch existing product data and populate the form
+    window.onload = async () => {
+        const id = document.getElementById('productId').value;
+
+        try {
+            const response = await fetch(`/api/products/${id}`);
+            if (response.ok) {
+                const product = await response.json();
+                document.getElementById('name').value = product.name;
+                document.getElementById('brand').value = product.brand;
+                document.getElementById('category').value = product.category;
+                document.getElementById('price').value = product.price;
+                document.getElementById('description').value = product.description;
+            } else {
+                messageDiv.innerText = 'Failed to load product.';
+            }
+        } catch (error) {
+            console.error('Error fetching product:', error);
+            messageDiv.innerText = 'A network error occurred.';
+        }
+    };
+</script>
+</body>
+</html>
